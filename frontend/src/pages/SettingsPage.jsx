@@ -18,8 +18,8 @@ const SettingsPage = () => {
     loginAlerts: true,
     dataSharing: false,
     language: 'en',
-    currency: 'USD',
-    timezone: 'UTC-5'
+    currency: 'LKR',
+   
   });
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -658,28 +658,8 @@ const SettingsPage = () => {
                   onChange={(e) => handleSelectChange('currency', e.target.value)}
                 >
                   <option value="USD">USD ($)</option>
-                
-                </select>
-              </div>
-            </div>
-
-            <div className="setting-item">
-              <div className="setting-info">
-                <label className="setting-label">Timezone</label>
-                <span className="setting-description">Set your local timezone</span>
-              </div>
-              <div className="select-wrapper">
-                <select 
-                  className="setting-select"
-                  value={settings.timezone}
-                  onChange={(e) => handleSelectChange('timezone', e.target.value)}
-                >
-                  <option value="UTC-12">UTC-12:00</option>
-                  <option value="UTC-8">UTC-08:00 Pacific</option>
-                  <option value="UTC-5">UTC-05:00 Eastern</option>
-                  <option value="UTC+0">UTC+00:00 London</option>
-                  <option value="UTC+1">UTC+01:00 Paris</option>
-                  <option value="UTC+8">UTC+08:00 Singapore</option>
+                  <option value="LKR">LKR </option>
+                  
                 </select>
               </div>
             </div>
