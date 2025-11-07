@@ -1,0 +1,68 @@
+/* Notification Badge Styles */
+.notification-badge {
+  position: absolute;
+  background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.7rem;
+  line-height: 1;
+  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
+  animation: pulse 2s infinite;
+  z-index: 10;
+}
+
+.notification-badge.small {
+  min-width: 16px;
+  height: 16px;
+  padding: 2px;
+  font-size: 0.6rem;
+  top: -4px;
+  right: -4px;
+}
+
+.notification-badge.medium {
+  min-width: 20px;
+  height: 20px;
+  padding: 3px;
+  font-size: 0.7rem;
+  top: -6px;
+  right: -6px;
+}
+
+.notification-badge.large {
+  min-width: 24px;
+  height: 24px;
+  padding: 4px;
+  font-size: 0.75rem;
+  top: -8px;
+  right: -8px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.6);
+  }
+}
+
+/* For sidebar items */
+.sidebar-links li {
+  position: relative;
+}
+
+.sidebar-links li button {
+  position: relative;
+}
+
+/* For navbar items */
+.navbar button {
+  position: relative;
+}

@@ -1,62 +1,91 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User, Lock, ArrowLeft } from 'lucide-react';
+import apiClient, { fetchCsrfToken } from '../api/axiosConfig';
+import { useNotification } from '../components/NotificationSystem';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [theme, setTheme] = useState(() => {
-    return sessionStorage.getItem('theme') || 'light';
-  });
+  const [rememberMe, setRememberMe] = useState(false);
+  const [theme, setTheme] = useState('light');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
 
   useEffect(() => {
-    document.body.className = theme === 'dark' ? 'dark-theme' : '';
-  }, [theme]);
+    const savedTheme = sessionStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+    document.body.className = savedTheme === 'dark' ? 'dark-theme' : '';
+  }, []);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Basic validation
-    if (!username || !password) {
-      setError('Please fill in all fields');
+    if (!username.trim() || !password.trim()) {
+      setError('Please enter both username and password.');
       return;
     }
 
-    // Simple authentication (replace with real authentication)
-    if (username && password) {
-      // Set login status
+    setIsLoading(true);
+
+    try {
+      await fetchCsrfToken();
+      const response = await apiClient.post('/auth/login', {
+        username: username,
+        password: password
+      });
+
+      const userData = response.data;
+      console.log('Login successful:', userData);
+
+      // Store user session in sessionStorage (separate from admin localStorage)
       sessionStorage.setItem('isLoggedIn', 'true');
-      sessionStorage.setItem('username', username);
+      sessionStorage.setItem('username', userData.username);
+      sessionStorage.setItem('email', userData.email);
+      
+      // Use the role returned by the backend, or default to 'owner' if not provided
+      const userRole = userData.roles && userData.roles.length > 0
+                       ? userData.roles[0].replace('ROLE_', '').toLowerCase()
+                       : 'owner';
+      sessionStorage.setItem('userRole', userRole);
 
-      // Check if there's a redirect path and role
       const redirectPath = sessionStorage.getItem('redirectAfterLogin');
-      const intendedRole = sessionStorage.getItem('intendedRole');
+      sessionStorage.removeItem('redirectAfterLogin');
 
-      console.log('Redirect Path:', redirectPath);
-      console.log('Intended Role:', intendedRole);
-
-      if (redirectPath && intendedRole) {
-        // Set the user role
-        sessionStorage.setItem('userRole', intendedRole);
-        
-        // Clear the temporary redirect data
-        sessionStorage.removeItem('redirectAfterLogin');
-        sessionStorage.removeItem('intendedRole');
-        
-        // Navigate to the intended page
-        console.log('Navigating to:', redirectPath);
-        navigate(redirectPath, { replace: true });
+      if (redirectPath) {
+        showNotification('success', 'Login Successful', `Welcome back to Rentify, ${userData.username}!`);
+        setTimeout(() => navigate(redirectPath, { replace: true }), 1000);
       } else {
-        // Default redirect to home
-        navigate('/', { replace: true });
+        showNotification('success', 'Login Successful', `Welcome ${userData.username}!`);
+        setTimeout(() => navigate('/', { replace: true }), 1000);
       }
-    } else {
-      setError('Invalid username or password');
+
+    } catch (err) {
+      console.error('Login failed:', err);
+      if (err.response) {
+        setError(err.response.data || 'Invalid username or password.');
+      } else if (err.request) {
+        setError('Network Error: Could not connect to the server.');
+      } else {
+        setError('An unexpected error occurred during login.');
+      }
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleBackToHome = () => navigate('/');
+  const handleForgotPassword = (e) => {
+    e.preventDefault();
+    showNotification('info', 'Coming Soon', 'Password reset feature will be available soon.');
+  };
+  const handleSignup = (e) => {
+    e.preventDefault();
+    navigate('/signup');
   };
 
   return (
@@ -69,34 +98,35 @@ const LoginPage = () => {
         }
 
         :root {
-          --bg-gradient-start: #2563eb;
-          --bg-gradient-end: #3b82f6;
-          --text-primary: #1e293b;
-          --text-secondary: #ffffff;
-          --accent-color: #3b82f6;
-          --accent-hover: #2563eb;
-          --card-bg: rgba(255, 255, 255, 0.98);
-          --input-bg: #f8fafc;
-          --input-border: #e2e8f0;
-          --error-color: #ef4444;
+          --bg-gradient-start: #F5F1E8;
+          --bg-gradient-end: #FBF8F0;
+          --text-primary: #1F2E3D;
+          --text-secondary: #6B7C8C;
+          --accent-color: #5B8DB8;
+          --accent-hover: #4A7BA4;
+          --card-bg: rgba(251, 248, 240, 0.95);
+          --danger-color: #C85A54;
+          --input-bg: #FBF8F0;
+          --input-border: rgba(107, 124, 140, 0.3);
         }
 
         body.dark-theme {
-          --bg-gradient-start: #1e3a8a;
-          --bg-gradient-end: #1e40af;
-          --text-primary: #ffffff;
-          --text-secondary: #ffffff;
-          --accent-color: #60a5fa;
-          --accent-hover: #3b82f6;
-          --card-bg: rgba(30, 41, 59, 0.98);
-          --input-bg: rgba(51, 65, 85, 0.5);
-          --input-border: rgba(100, 116, 139, 0.5);
+          --bg-gradient-start: #1a2734;
+          --bg-gradient-end: #2a3844;
+          --text-primary: #F5F1E8;
+          --text-secondary: #C4CDD5;
+          --accent-color: #7BA5CC;
+          --accent-hover: #6B9AC4;
+          --card-bg: rgba(42, 56, 68, 0.95);
+          --danger-color: #E67A72;
+          --input-bg: #1a2734;
+          --input-border: rgba(196, 205, 213, 0.3);
         }
 
         .login-container {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
           min-height: 100vh;
-          background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+          background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -105,54 +135,53 @@ const LoginPage = () => {
           overflow: hidden;
         }
 
-        /* Animated background circles */
         .circle {
-          position: absolute;
+          position: fixed;
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(91, 141, 184, 0.25);
           animation: float 20s infinite ease-in-out;
+          box-shadow: 0 0 60px rgba(91, 141, 184, 0.3);
+          filter: blur(1px);
+          pointer-events: none;
+        }
+
+        body.dark-theme .circle {
+          background: rgba(123, 165, 204, 0.3);
+          box-shadow: 0 0 60px rgba(123, 165, 204, 0.25);
         }
 
         .circle-1 {
-          width: 80px;
-          height: 80px;
+          width: 150px;
+          height: 150px;
           top: 10%;
           left: 10%;
           animation-delay: 0s;
         }
 
         .circle-2 {
-          width: 60px;
-          height: 60px;
-          top: 20%;
+          width: 110px;
+          height: 110px;
+          top: 60%;
           right: 15%;
           animation-delay: 2s;
         }
 
         .circle-3 {
-          width: 100px;
-          height: 100px;
-          bottom: 15%;
+          width: 180px;
+          height: 180px;
+          bottom: 10%;
           left: 5%;
           animation-delay: 4s;
         }
 
-        .circle-4 {
-          width: 70px;
-          height: 70px;
-          bottom: 20%;
-          right: 10%;
-          animation-delay: 6s;
-        }
-
         @keyframes float {
           0%, 100% {
-            transform: translateY(0) translateX(0);
-            opacity: 0.3;
+            transform: translateY(0) translateX(0) scale(1);
+            opacity: 0.4;
           }
           50% {
-            transform: translateY(-20px) translateX(20px);
-            opacity: 0.6;
+            transform: translateY(-30px) translateX(30px) scale(1.1);
+            opacity: 0.7;
           }
         }
 
@@ -160,10 +189,10 @@ const LoginPage = () => {
           position: absolute;
           top: 2rem;
           left: 2rem;
-          background: rgba(255, 255, 255, 0.2);
+          background: var(--card-bg);
           backdrop-filter: blur(10px);
-          color: white;
-          border: 1px solid rgba(255, 255, 255, 0.3);
+          color: var(--text-primary);
+          border: 1px solid rgba(91, 141, 184, 0.3);
           padding: 0.75rem 1.5rem;
           border-radius: 8px;
           cursor: pointer;
@@ -176,24 +205,27 @@ const LoginPage = () => {
         }
 
         .back-button:hover {
-          background: rgba(255, 255, 255, 0.3);
+          background: var(--accent-color);
+          color: #FBF8F0;
           transform: translateX(-5px);
+          border-color: var(--accent-color);
         }
 
         .login-card {
           background: var(--card-bg);
           backdrop-filter: blur(10px);
-          border-radius: 20px;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          border-radius: 16px;
+          padding: 3rem;
           width: 100%;
           max-width: 450px;
-          padding: 3rem;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+          border: 1px solid rgba(91, 141, 184, 0.2);
           position: relative;
           z-index: 1;
-          animation: slideUp 0.6s ease-out;
+          animation: fadeInUp 0.6s ease-out;
         }
 
-        @keyframes slideUp {
+        @keyframes fadeInUp {
           from {
             opacity: 0;
             transform: translateY(30px);
@@ -213,7 +245,7 @@ const LoginPage = () => {
           display: inline-flex;
           align-items: center;
           gap: 0.75rem;
-          margin-bottom: 1rem;
+          margin-bottom: 1.5rem;
         }
 
         .logo-icon {
@@ -224,15 +256,16 @@ const LoginPage = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
+          color: #FBF8F0;
           font-weight: bold;
           font-size: 1.5rem;
+          box-shadow: 0 4px 15px rgba(91, 141, 184, 0.3);
         }
 
         .logo-text {
           font-size: 2rem;
           font-weight: 700;
-          color: var(--accent-color);
+          color: var(--text-primary);
         }
 
         .login-title {
@@ -243,97 +276,119 @@ const LoginPage = () => {
         }
 
         .login-subtitle {
-          color: var(--text-primary);
-          opacity: 0.7;
-          font-size: 0.95rem;
+          font-size: 1rem;
+          color: var(--text-secondary);
         }
 
         .login-form {
-          margin-top: 2rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+
+        .error-message {
+          background: rgba(200, 90, 84, 0.1);
+          border: 1px solid var(--danger-color);
+          color: var(--danger-color);
+          padding: 0.875rem;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          font-weight: 500;
         }
 
         .form-group {
-          margin-bottom: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
         }
 
         .form-label {
-          display: block;
           font-weight: 600;
-          color: var(--text-primary);
-          margin-bottom: 0.5rem;
           font-size: 0.95rem;
+          color: var(--text-primary);
         }
 
         .input-wrapper {
           position: relative;
+          display: flex;
+          align-items: center;
         }
+
+
 
         .input-icon {
           position: absolute;
-          left: 1rem;
+          right: 1rem;
           top: 50%;
           transform: translateY(-50%);
-          color: var(--text-primary);
-          opacity: 0.5;
+          color: var(--text-secondary);
+          z-index: 2;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+        }
+
+        .input-wrapper:focus-within .input-icon,
+        .input-wrapper:has(.form-input:not(:placeholder-shown)) .input-icon {
+          opacity: 0;
         }
 
         .form-input {
           width: 100%;
-          padding: 0.875rem 1rem 0.875rem 3rem;
+          height: 3.25rem;
+          padding: 0 3rem 0 1rem;
           border: 2px solid var(--input-border);
-          border-radius: 10px;
+          border-radius: 8px;
           font-size: 1rem;
           background: var(--input-bg);
           color: var(--text-primary);
           transition: all 0.3s ease;
+          line-height: 1.5;
+        }
+
+        .form-input::placeholder {
+          color: var(--text-secondary);
+          opacity: 0.8;
+          font-size: 0.95rem;
+          transition: opacity 0.3s ease;
+        }
+
+        .form-input:focus::placeholder,
+        .form-input:not(:placeholder-shown)::placeholder {
+          opacity: 0;
         }
 
         .form-input:focus {
           outline: none;
           border-color: var(--accent-color);
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+          box-shadow: 0 0 0 3px rgba(91, 141, 184, 0.1);
         }
 
         .password-toggle {
           position: absolute;
-          right: 1rem;
+          right: 3.5rem;
           top: 50%;
           transform: translateY(-50%);
           background: none;
           border: none;
-          color: var(--text-primary);
-          opacity: 0.5;
+          color: var(--text-secondary);
           cursor: pointer;
-          padding: 0.25rem;
-          transition: opacity 0.2s ease;
+          padding: 0.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: color 0.2s ease;
+          z-index: 2;
         }
 
         .password-toggle:hover {
-          opacity: 1;
-        }
-
-        .error-message {
-          background: rgba(239, 68, 68, 0.1);
-          border: 1px solid var(--error-color);
-          color: var(--error-color);
-          padding: 0.75rem 1rem;
-          border-radius: 8px;
-          margin-bottom: 1rem;
-          font-size: 0.9rem;
-          animation: shake 0.3s ease;
-        }
-
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-10px); }
-          75% { transform: translateX(10px); }
+          color: var(--accent-color);
         }
 
         .remember-forgot {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 1.5rem;
+          font-size: 0.9rem;
         }
 
         .checkbox-wrapper {
@@ -342,7 +397,7 @@ const LoginPage = () => {
           gap: 0.5rem;
         }
 
-        .checkbox-wrapper input {
+        .checkbox-wrapper input[type="checkbox"] {
           width: 18px;
           height: 18px;
           cursor: pointer;
@@ -350,15 +405,14 @@ const LoginPage = () => {
 
         .checkbox-wrapper label {
           color: var(--text-primary);
-          font-size: 0.9rem;
           cursor: pointer;
         }
 
         .forgot-link {
           color: var(--accent-color);
           text-decoration: none;
-          font-size: 0.9rem;
           font-weight: 500;
+          cursor: pointer;
           transition: color 0.2s ease;
         }
 
@@ -371,61 +425,81 @@ const LoginPage = () => {
           width: 100%;
           padding: 1rem;
           background: var(--accent-color);
-          color: white;
+          color: #FBF8F0;
           border: none;
-          border-radius: 10px;
-          font-size: 1.05rem;
+          border-radius: 8px;
+          font-size: 1.1rem;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
-          box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+          box-shadow: 0 4px 15px rgba(91, 141, 184, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
         }
 
-        .login-button:hover {
+        .login-button:hover:not(:disabled) {
           background: var(--accent-hover);
           transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+          box-shadow: 0 6px 20px rgba(91, 141, 184, 0.4);
         }
 
-        .login-button:active {
-          transform: translateY(0);
+        .login-button:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .spinner {
+          width: 20px;
+          height: 20px;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          border-top-color: #FBF8F0;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
         }
 
         .divider {
-          display: flex;
-          align-items: center;
-          margin: 1.5rem 0;
-          color: var(--text-primary);
-          opacity: 0.5;
+          text-align: center;
+          color: var(--text-secondary);
           font-size: 0.9rem;
+          position: relative;
+          margin: 1.5rem 0;
         }
 
         .divider::before,
         .divider::after {
           content: '';
-          flex: 1;
+          position: absolute;
+          top: 50%;
+          width: 40%;
           height: 1px;
           background: var(--input-border);
         }
 
         .divider::before {
-          margin-right: 1rem;
+          left: 0;
         }
 
         .divider::after {
-          margin-left: 1rem;
+          right: 0;
         }
 
         .signup-link {
           text-align: center;
-          color: var(--text-primary);
+          color: var(--text-secondary);
           font-size: 0.95rem;
         }
 
         .signup-link a {
           color: var(--accent-color);
-          text-decoration: none;
           font-weight: 600;
+          text-decoration: none;
+          cursor: pointer;
           transition: color 0.2s ease;
         }
 
@@ -434,48 +508,37 @@ const LoginPage = () => {
           text-decoration: underline;
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
+          .login-container {
+            padding: 1rem;
+          }
+
           .login-card {
-            padding: 2rem 1.5rem;
+            padding: 2rem;
           }
 
           .back-button {
             top: 1rem;
             left: 1rem;
-            padding: 0.6rem 1rem;
+            padding: 0.5rem 1rem;
             font-size: 0.9rem;
           }
 
-          .login-title {
-            font-size: 1.5rem;
-          }
-
-          .logo-icon {
-            width: 40px;
-            height: 40px;
-            font-size: 1.25rem;
-          }
-
-          .logo-text {
-            font-size: 1.75rem;
+          .circle {
+            opacity: 0.3;
           }
         }
       `}</style>
 
-      {/* Animated background circles */}
       <div className="circle circle-1"></div>
       <div className="circle circle-2"></div>
       <div className="circle circle-3"></div>
-      <div className="circle circle-4"></div>
 
-      {/* Back Button */}
-      <button className="back-button" onClick={() => navigate('/')}>
+      <button className="back-button" onClick={handleBackToHome}>
         <ArrowLeft size={20} />
-        Back to Home
+        <span>Back to Home</span>
       </button>
 
-      {/* Login Card */}
       <div className="login-card">
         <div className="logo-section">
           <div className="logo">
@@ -499,6 +562,8 @@ const LoginPage = () => {
                 placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                disabled={isLoading}
+                required
               />
             </div>
           </div>
@@ -513,11 +578,15 @@ const LoginPage = () => {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                required
               />
               <button
                 type="button"
                 className="password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -526,22 +595,39 @@ const LoginPage = () => {
 
           <div className="remember-forgot">
             <div className="checkbox-wrapper">
-              <input type="checkbox" id="remember" />
+              <input
+                type="checkbox"
+                id="remember"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                disabled={isLoading}
+              />
               <label htmlFor="remember">Remember me</label>
             </div>
-            <a href="/forgot-password" className="forgot-link">
+            <a onClick={handleForgotPassword} className="forgot-link">
               Forgot Password?
             </a>
           </div>
 
-          <button type="submit" className="login-button">
-            Login
+          <button
+            type="submit"
+            className="login-button"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <div className="spinner"></div>
+                Logging in...
+              </>
+            ) : (
+              'Login'
+            )}
           </button>
 
           <div className="divider">OR</div>
 
           <div className="signup-link">
-            Don't have an account? <a href="/signup">Sign up</a>
+            Don't have an account? <a onClick={handleSignup}>Sign up</a>
           </div>
         </form>
       </div>

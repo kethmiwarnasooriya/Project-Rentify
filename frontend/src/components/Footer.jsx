@@ -4,27 +4,20 @@ import { Building2, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin,
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   
-  // Check both localStorage and sessionStorage, and body class
   const getTheme = () => {
     if (document.body.classList.contains('dark-theme')) return 'dark';
-    return localStorage.getItem('theme') || sessionStorage.getItem('theme') || 'light';
+    return sessionStorage.getItem('theme') || 'light';
   };
   
   const [theme, setTheme] = useState(getTheme);
 
   useEffect(() => {
-    // Update theme when it changes
     const handleThemeChange = () => {
       setTheme(getTheme());
     };
 
-    // Listen for storage changes
     window.addEventListener('storage', handleThemeChange);
-    
-    // Check theme periodically (for same-tab changes)
     const interval = setInterval(handleThemeChange, 100);
-    
-    // Use MutationObserver to watch for body class changes
     const observer = new MutationObserver(handleThemeChange);
     observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
@@ -42,31 +35,48 @@ const Footer = () => {
   return (
     <footer className="footer">
       <style>{`
+        :root {
+          --footer-bg: #F5F1E8;
+          --footer-text: #1F2E3D;
+          --footer-secondary: #6B7C8C;
+          --footer-accent: #5B8DB8;
+          --footer-border: rgba(107, 124, 140, 0.2);
+        }
+
+        body.dark-theme {
+          --footer-bg: #1a2734;
+          --footer-text: #F5F1E8;
+          --footer-secondary: #C4CDD5;
+          --footer-accent: #7BA5CC;
+          --footer-border: rgba(196, 205, 213, 0.2);
+        }
+
         .footer {
-          background: ${theme === 'dark' ? '#1e293b' : '#f8fafc'};
-          border-top: 1px solid ${theme === 'dark' ? '#334155' : '#e2e8f0'};
-          color: ${theme === 'dark' ? '#ffffff' : '#1e293b'};
+          background: var(--footer-bg);
+          border-top: 1px solid var(--footer-border);
+          color: var(--footer-text);
           margin-top: auto;
           width: 100%;
+          transition: background 0.3s ease, color 0.3s ease;
         }
 
         .footer-content {
           max-width: 1400px;
           margin: 0 auto;
-          padding: 3rem 2rem 1rem;
+          padding: 3rem 4rem 1rem;
         }
 
         .footer-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 2rem;
-          margin-bottom: 2rem;
+          gap: 3rem;
+          margin-bottom: 2.5rem;
         }
 
         .footer-section h3 {
           font-size: 1.2rem;
-          margin-bottom: 1rem;
-          color: ${theme === 'dark' ? '#60a5fa' : '#3b82f6'};
+          margin-bottom: 1.25rem;
+          color: var(--footer-accent);
           font-weight: 700;
         }
 
@@ -80,25 +90,25 @@ const Footer = () => {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          font-size: 1.5rem;
+          font-size: 1.75rem;
           font-weight: 700;
-          color: ${theme === 'dark' ? '#60a5fa' : '#3b82f6'};
+          color: var(--footer-accent);
         }
 
         .footer-logo-icon {
           width: 40px;
           height: 40px;
-          background: ${theme === 'dark' ? '#60a5fa' : '#3b82f6'};
+          background: var(--footer-accent);
           border-radius: 8px;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
+          color: #FBF8F0;
         }
 
         .footer-description {
-          color: ${theme === 'dark' ? '#94a3b8' : '#64748b'};
-          line-height: 1.6;
+          color: var(--footer-secondary);
+          line-height: 1.7;
           font-size: 0.95rem;
         }
 
@@ -109,25 +119,26 @@ const Footer = () => {
         }
 
         .footer-links li {
-          margin-bottom: 0.75rem;
+          margin-bottom: 0.875rem;
         }
 
         .footer-links button {
-          color: ${theme === 'dark' ? '#94a3b8' : '#64748b'};
+          color: var(--footer-secondary);
           text-decoration: none;
           transition: all 0.2s ease;
           font-size: 0.95rem;
+          font-weight: 500;
           display: inline-block;
           background: none;
           border: none;
           padding: 0;
           cursor: pointer;
-          font-family: inherit;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
           text-align: left;
         }
 
         .footer-links button:hover {
-          color: ${theme === 'dark' ? '#60a5fa' : '#3b82f6'};
+          color: var(--footer-accent);
           transform: translateX(5px);
         }
 
@@ -141,14 +152,14 @@ const Footer = () => {
           display: flex;
           align-items: flex-start;
           gap: 0.75rem;
-          color: ${theme === 'dark' ? '#94a3b8' : '#64748b'};
+          color: var(--footer-secondary);
           font-size: 0.95rem;
         }
 
         .contact-icon {
           width: 20px;
           height: 20px;
-          color: ${theme === 'dark' ? '#60a5fa' : '#3b82f6'};
+          color: var(--footer-accent);
           flex-shrink: 0;
           margin-top: 2px;
         }
@@ -156,34 +167,35 @@ const Footer = () => {
         .social-links {
           display: flex;
           gap: 1rem;
-          margin-top: 1rem;
+          margin-top: 1.25rem;
         }
 
         .social-link {
-          width: 40px;
-          height: 40px;
+          width: 42px;
+          height: 42px;
           border-radius: 50%;
-          background: ${theme === 'dark' ? '#0f172a' : '#ffffff'};
-          border: 1px solid ${theme === 'dark' ? '#334155' : '#e2e8f0'};
+          background: rgba(91, 141, 184, 0.1);
+          border: 1px solid var(--footer-border);
           display: flex;
           align-items: center;
           justify-content: center;
-          color: ${theme === 'dark' ? '#94a3b8' : '#64748b'};
-          transition: all 0.2s ease;
+          color: var(--footer-accent);
+          transition: all 0.3s ease;
           cursor: pointer;
           text-decoration: none;
         }
 
         .social-link:hover {
-          background: ${theme === 'dark' ? '#60a5fa' : '#3b82f6'};
-          color: white;
-          border-color: ${theme === 'dark' ? '#60a5fa' : '#3b82f6'};
+          background: var(--footer-accent);
+          color: #FBF8F0;
+          border-color: var(--footer-accent);
           transform: translateY(-3px);
+          box-shadow: 0 4px 12px rgba(91, 141, 184, 0.3);
         }
 
         .footer-bottom {
-          border-top: 1px solid ${theme === 'dark' ? '#334155' : '#e2e8f0'};
-          padding: 1.5rem 2rem;
+          border-top: 1px solid var(--footer-border);
+          padding: 1.75rem 4rem;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -192,7 +204,7 @@ const Footer = () => {
         }
 
         .footer-copyright {
-          color: ${theme === 'dark' ? '#94a3b8' : '#64748b'};
+          color: var(--footer-secondary);
           font-size: 0.9rem;
           display: flex;
           align-items: center;
@@ -200,13 +212,13 @@ const Footer = () => {
         }
 
         .footer-heart {
-          color: #ef4444;
+          color: #C85A54;
           animation: heartbeat 1.5s ease-in-out infinite;
         }
 
         @keyframes heartbeat {
           0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.1); }
+          50% { transform: scale(1.15); }
         }
 
         .footer-legal {
@@ -216,24 +228,35 @@ const Footer = () => {
         }
 
         .footer-legal button {
-          color: ${theme === 'dark' ? '#94a3b8' : '#64748b'};
+          color: var(--footer-secondary);
           text-decoration: none;
           font-size: 0.9rem;
+          font-weight: 500;
           transition: color 0.2s ease;
           background: none;
           border: none;
           padding: 0;
           cursor: pointer;
-          font-family: inherit;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
         }
 
         .footer-legal button:hover {
-          color: ${theme === 'dark' ? '#60a5fa' : '#3b82f6'};
+          color: var(--footer-accent);
+        }
+
+        @media (max-width: 1024px) {
+          .footer-content {
+            padding: 2.5rem 2rem 1rem;
+          }
+
+          .footer-bottom {
+            padding: 1.5rem 2rem;
+          }
         }
 
         @media (max-width: 768px) {
           .footer-content {
-            padding: 2rem 1rem 1rem;
+            padding: 2rem 1.5rem 1rem;
           }
 
           .footer-grid {
@@ -244,7 +267,7 @@ const Footer = () => {
           .footer-bottom {
             flex-direction: column;
             text-align: center;
-            padding: 1rem;
+            padding: 1.5rem 1.5rem;
           }
 
           .footer-legal {
@@ -255,7 +278,6 @@ const Footer = () => {
 
       <div className="footer-content">
         <div className="footer-grid">
-          {/* Brand Section */}
           <div className="footer-section footer-brand">
             <div className="footer-logo">
               <div className="footer-logo-icon">
@@ -283,46 +305,25 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div className="footer-section">
             <h3>Quick Links</h3>
             <ul className="footer-links">
-              <li>
-                <button onClick={() => handleNavigation('/')}>Home</button>
-              </li>
-              <li>
-                <button onClick={() => handleNavigation('/about')}>About Us</button>
-              </li>
-              <li>
-                <button onClick={() => handleNavigation('/contact')}>Contact</button>
-              </li>
-            
+              <li><button onClick={() => handleNavigation('/')}>Home</button></li>
+              <li><button onClick={() => handleNavigation('/about')}>About Us</button></li>
+              <li><button onClick={() => handleNavigation('/contact')}>Contact</button></li>
             </ul>
           </div>
 
-          {/* Resources */}
           <div className="footer-section">
             <h3>Resources</h3>
             <ul className="footer-links">
-              <li>
-                <button onClick={() => alert('Help Center coming soon!')}>Help Center</button>
-              </li>
-              <li>
-                <button onClick={() => alert('FAQ coming soon!')}>FAQ</button>
-              </li>
-              <li>
-                <button onClick={() => alert('Blog coming soon!')}>Blog</button>
-              </li>
-              <li>
-                <button onClick={() => alert('Guides coming soon!')}>Property Guides</button>
-              </li>
-              <li>
-                <button onClick={() => alert('Terms coming soon!')}>Terms of Service</button>
-              </li>
+              <li><button onClick={() => handleNavigation('/faq')}>FAQ</button></li>
+              <li><button onClick={() => handleNavigation('/blog')}>Blog</button></li>
+              <li><button onClick={() => handleNavigation('/property-guides')}>Property Guides</button></li>
+              <li><button onClick={() => handleNavigation('/terms')}>Terms of Service</button></li>
             </ul>
           </div>
 
-          {/* Contact Info */}
           <div className="footer-section">
             <h3>Contact Us</h3>
             <div className="contact-info">
@@ -343,15 +344,14 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Bottom Bar */}
       <div className="footer-bottom">
         <div className="footer-copyright">
           © {currentYear} Rentify. Made with <Heart className="footer-heart" size={16} fill="currentColor" /> in Sri Lanka
         </div>
         <div className="footer-legal">
-          <button onClick={() => alert('Privacy Policy coming soon!')}>Privacy Policy</button>
-          <button onClick={() => alert('Terms coming soon!')}>Terms & Conditions</button>
-          <button onClick={() => alert('Cookie Policy coming soon!')}>Cookie Policy</button>
+          <button onClick={() => handleNavigation('/privacy-policy')}>Privacy Policy</button>
+          <button onClick={() => handleNavigation('/terms')}>Terms & Conditions</button>
+          <button onClick={() => handleNavigation('/cookie-policy')}>Cookie Policy</button>
         </div>
       </div>
     </footer>

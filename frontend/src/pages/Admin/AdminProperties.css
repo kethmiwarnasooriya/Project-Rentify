@@ -1,0 +1,220 @@
+.admin-properties {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.logout-btn {
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logout-btn:hover {
+  background-color: #c82333;
+}
+
+.admin-header h1 {
+  color: #333;
+  margin: 0;
+}
+
+.back-btn {
+  padding: 10px 20px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.back-btn:hover {
+  background-color: #545b62;
+}
+
+.properties-stats {
+  background: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat-label {
+  font-weight: 600;
+  color: #666;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.properties-table-container {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  overflow-x: auto;
+}
+
+.properties-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.properties-table th,
+.properties-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.properties-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+  position: sticky;
+  top: 0;
+}
+
+.properties-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.title-cell {
+  max-width: 200px;
+}
+
+.property-title {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+.property-type {
+  background-color: #e9ecef;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.price-cell {
+  font-weight: 600;
+  color: #28a745;
+}
+
+.owner-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.owner-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.owner-email {
+  font-size: 12px;
+  color: #666;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.3s;
+}
+
+.view-owner {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.view-owner:hover {
+  background-color: #138496;
+}
+
+.no-properties {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.admin-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  font-size: 18px;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .admin-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .properties-table-container {
+    font-size: 14px;
+  }
+  
+  .properties-table th,
+  .properties-table td {
+    padding: 8px;
+  }
+  
+  .owner-info {
+    font-size: 12px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+}

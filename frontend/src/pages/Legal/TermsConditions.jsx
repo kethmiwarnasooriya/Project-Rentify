@@ -524,7 +524,7 @@ const TermsConditions = () => {
 
         <div className="nav-right">
           <div className="user-info">
-            <div className="user-avatar">{username.charAt(0).toUpperCase()}</div>
+            <div className="user-avatar">{username ? username.charAt(0).toUpperCase() : '?'}</div>
             <span>{username}</span>
           </div>
           <div className="hamburger" onClick={toggleSidebar}>
