@@ -99,6 +99,21 @@ public class AdminController {
         return ResponseEntity.ok(updatedMessage);
     }
 
+    // Reply to message
+    @PostMapping("/messages/{id}/reply")
+    public ResponseEntity<Contact> replyToMessage(@PathVariable Long id, @RequestBody java.util.Map<String, String> payload) {
+        log.info("Admin replying to message ID: {}", id);
+        String replyText = payload.get("reply");
+        
+        if (replyText == null || replyText.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        Contact repliedMessage = adminService.replyToMessage(id, replyText);
+        log.info("Reply sent successfully for message ID: {}", id);
+        return ResponseEntity.ok(repliedMessage);
+    }
+
     // Get user details by ID
     @GetMapping("/users/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {

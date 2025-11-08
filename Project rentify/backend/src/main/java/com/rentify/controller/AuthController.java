@@ -97,4 +97,17 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PostMapping("/register-admin")
+    public ResponseEntity<?> registerAdmin(@Valid @RequestBody RegisterDto registerDto) {
+        log.info("Attempting to register admin user: {}", registerDto.getUsername());
+        try {
+            authService.registerAdminUser(registerDto);
+            log.info("Admin user registered successfully: {}", registerDto.getUsername());
+            return ResponseEntity.status(HttpStatus.CREATED).body("Admin user registered successfully!");
+        } catch (RuntimeException e) {
+            log.error("Admin registration failed for user {}: {}", registerDto.getUsername(), e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

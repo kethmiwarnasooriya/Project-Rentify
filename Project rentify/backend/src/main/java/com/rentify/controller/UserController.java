@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus; // Added
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,10 +49,31 @@ public class UserController {
     @DeleteMapping("/me")
     public ResponseEntity<Void> deleteCurrentUser() {
         log.info("Request received to delete current user account '/api/users/me'");
-        userService.deleteCurrentUserAccount();
-        log.info("User account deleted successfully");
-        return ResponseEntity.noContent().build();
+        try {
+            userService.deleteCurrentUserAccount();
+            log.info("User account deleted successfully");
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            log.error("Error deleting user account: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to delete user account: " + e.getMessage());
+        }
     }
+
+    // Endpoint to get user's contact messages with replies
+    @GetMapping("/me/messages")
+    public ResponseEntity<?> getUserMessages() {
+        log.info("Request received to get current user's messages");
+        try {
+            java.util.List<com.rentify.entity.Contact> messages = userService.getUserMessages();
+            return ResponseEntity.ok(messages);
+        } catch (Exception e) {
+            log.error("Error fetching user messages: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(java.util.Map.of("error", "Failed to fetch messages"));
+        }
+    }
+
+
 
     // Add endpoints for updating user profile if needed
     /*
@@ -64,4 +86,32 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
     */
+
+    // Emergency endpoint to create admin user - REMOVE IN PRODUCTION
+    @PostMapping("/create-emergency-admin")
+    public ResponseEntity<String> createEmergencyAdmin() {
+        log.warn("Emergency admin creation endpoint called");
+        try {
+            String result = userService.createEmergencyAdmin();
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("Error creating emergency admin: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error creating admin: " + e.getMessage());
+        }
+    }
+
+    // Emergency endpoint to fix admin roles - REMOVE IN PRODUCTION
+    @PostMapping("/fix-admin-roles")
+    public ResponseEntity<String> fixAdminRoles() {
+        log.warn("Fix admin roles endpoint called");
+        try {
+            String result = userService.fixAdminRoles();
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("Error fixing admin roles: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error fixing admin roles: " + e.getMessage());
+        }
+    }
 }
