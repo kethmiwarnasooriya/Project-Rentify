@@ -39,7 +39,7 @@ const TenantDashboard = () => {
     const [showChatBox, setShowChatBox] = useState(false);
     const [chatUser, setChatUser] = useState(null);
     const [chatProperty, setChatProperty] = useState(null);
-    
+
     // Notifications
     const { unreadMessages, updatedReservations, refresh: refreshNotifications } = useNotifications();
     const [showNotificationPopup, setShowNotificationPopup] = useState(false);
@@ -170,7 +170,7 @@ const TenantDashboard = () => {
     useEffect(() => {
         const hasNotifications = unreadMessages > 0 || updatedReservations > 0;
         const lastShown = sessionStorage.getItem('last_notification_popup');
-        
+
         console.log('🔔 Notification Check:', {
             unreadMessages,
             updatedReservations,
@@ -178,7 +178,7 @@ const TenantDashboard = () => {
             hasShownPopup,
             lastShown
         });
-        
+
         // Show popup only once per session and only if there are notifications
         if (hasNotifications && !hasShownPopup && !lastShown) {
             console.log('✅ Showing notification popup in 1 second...');
@@ -188,12 +188,12 @@ const TenantDashboard = () => {
                 setHasShownPopup(true);
                 sessionStorage.setItem('last_notification_popup', 'true');
             }, 1000); // Show after 1 second
-            
+
             return () => clearTimeout(timer);
         } else {
             console.log('❌ Not showing popup:', {
-                reason: !hasNotifications ? 'No notifications' : 
-                        hasShownPopup ? 'Already shown' : 
+                reason: !hasNotifications ? 'No notifications' :
+                    hasShownPopup ? 'Already shown' :
                         lastShown ? 'Shown in session' : 'Unknown'
             });
         }
@@ -1210,20 +1210,14 @@ const TenantDashboard = () => {
                 }
 
                 .property-card {
-                    background: var(--card-bg);
-                    backdrop-filter: blur(10px);
-                    border-radius: 12px;
-                    border: 1px solid var(--border-color);
+                    background: transparent;
                     overflow: hidden;
                     transition: all 0.3s ease;
                     cursor: pointer;
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
                 }
 
                 .property-card:hover {
                     transform: translateY(-8px);
-                    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-                    border-color: var(--accent-color);
                 }
 
                 .property-image {
@@ -1504,6 +1498,9 @@ const TenantDashboard = () => {
                     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
                     animation: modalSlideIn 0.3s ease-out;
                     border: 1px solid rgba(102, 126, 234, 0.1);
+                    display: flex;
+                    flex-direction: column;
+                    margin: auto;
                 }
 
                 body.dark-theme .property-modal {
@@ -1527,7 +1524,7 @@ const TenantDashboard = () => {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    padding: 2rem 2rem 1rem;
+                    padding: 1.5rem 2rem;
                     border-bottom: 1px solid var(--border-color);
                 }
 
@@ -1553,11 +1550,30 @@ const TenantDashboard = () => {
                 }
 
                 .modal-content {
-                    padding: 2rem;
+                    padding: 0;
+                    overflow-y: auto;
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    width: 100%;
+                    max-width: 100%;
+                    margin: 0 auto;
+                }
+
+                .modal-details {
+                    padding: 0 2rem 2rem 2rem;
+                    width: 100%;
+                    max-width: 100%;
+                    margin: 0 auto;
                 }
 
                 .modal-image-gallery {
-                    margin-bottom: 2rem;
+                    margin-bottom: 0;
+                    padding: 2rem 2rem 1rem 2rem;
+                    width: 100%;
+                    max-width: 100%;
+                    margin: 0 auto;
                 }
 
                 .image-viewer {
@@ -1925,7 +1941,19 @@ const TenantDashboard = () => {
 
                     /* Mobile Image Gallery Styles */
                     .modal-overlay {
-                        padding: 1rem;
+                        padding: 0.5rem;
+                    }
+
+                    .modal-header {
+                        padding: 1rem 1.5rem;
+                    }
+
+                    .modal-image-gallery {
+                        padding: 1.5rem 1.5rem 0.75rem 1.5rem;
+                    }
+
+                    .modal-details {
+                        padding: 0 1.5rem 1.5rem 1.5rem;
                     }
 
                     .image-nav-btn {
@@ -2400,18 +2428,18 @@ const TenantDashboard = () => {
                                         <Heart size={20} fill={favorites.includes(selectedProperty.id) ? 'currentColor' : 'none'} />
                                         {favorites.includes(selectedProperty.id) ? 'Remove from Favorites' : 'Add to Favorites'}
                                     </button>
-                                    <button 
+                                    <button
                                         className="contact-btn"
                                         onClick={() => {
                                             console.log('🔵 Contact Owner clicked!');
                                             console.log('📦 Selected Property:', selectedProperty);
                                             console.log('👤 Owner:', selectedProperty?.owner);
-                                            
+
                                             if (!selectedProperty?.owner) {
                                                 alert('⚠️ Owner information not available. Please try refreshing the page.');
                                                 return;
                                             }
-                                            
+
                                             setChatUser(selectedProperty.owner);
                                             setChatProperty({
                                                 id: selectedProperty.id,

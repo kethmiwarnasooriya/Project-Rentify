@@ -71,7 +71,7 @@ const ViewProperty = () => {
         justifyContent: 'center', 
         alignItems: 'center', 
         height: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+        background: 'linear-gradient(135deg, #668cb4 0%, #fffef7 100%)'
       }}>
         <Loader2 size={48} className="animate-spin" style={{ color: 'white' }} />
       </div>
@@ -85,7 +85,7 @@ const ViewProperty = () => {
         justifyContent: 'center', 
         alignItems: 'center', 
         height: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+        background: 'linear-gradient(135deg, #668cb4 0%, #fffef7 100%)'
       }}>
         <div style={{ color: 'white', textAlign: 'center' }}>
           <h2>Property not found</h2>
@@ -111,7 +111,7 @@ const ViewProperty = () => {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+      background: 'linear-gradient(135deg, #668cb4 0%, #fffef7 100%)', 
       padding: '2rem' 
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>

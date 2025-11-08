@@ -32,7 +32,7 @@ const HomePage = () => {
       if (!sessionStorage.getItem('isLoggedIn')) {
         return;
       }
-      
+
       try {
         const response = await apiClient.get('/auth/status');
         if (response.data) {
@@ -63,11 +63,11 @@ const HomePage = () => {
   // Check for new replies
   const checkForNewReplies = async () => {
     if (!isLoggedIn) return;
-    
+
     try {
       const response = await apiClient.get('/users/me/messages');
       const messages = response.data || [];
-      
+
       // Initialize lastReplyCheck if not set (first time user logs in)
       let lastChecked = localStorage.getItem('lastReplyCheck');
       if (!lastChecked) {
@@ -75,21 +75,21 @@ const HomePage = () => {
         lastChecked = Date.now().toString();
         localStorage.setItem('lastReplyCheck', lastChecked);
       }
-      
+
       // Count messages with replies that haven't been seen
-      const newReplies = messages.filter(msg => 
-        msg.reply && 
-        msg.repliedAt && 
+      const newReplies = messages.filter(msg =>
+        msg.reply &&
+        msg.repliedAt &&
         new Date(msg.repliedAt).getTime() > parseInt(lastChecked)
       );
-      
+
       const previousCount = unreadReplies;
       setUnreadReplies(newReplies.length);
-      
+
       // Only show notification if count increased (new reply just arrived)
       if (newReplies.length > 0 && newReplies.length > previousCount) {
-        const replyText = newReplies.length === 1 
-          ? 'You have a new reply from admin!' 
+        const replyText = newReplies.length === 1
+          ? 'You have a new reply from admin!'
           : `You have ${newReplies.length} new replies from admin!`;
         showNotification('info', 'New Reply', replyText);
       }
@@ -101,11 +101,11 @@ const HomePage = () => {
   // Poll for new replies every 30 seconds
   useEffect(() => {
     if (!isLoggedIn) return;
-    
+
     const interval = setInterval(() => {
       checkForNewReplies();
     }, 30000); // Check every 30 seconds
-    
+
     return () => clearInterval(interval);
   }, [isLoggedIn]);
 
@@ -150,23 +150,23 @@ const HomePage = () => {
 
   const handleLogout = () => {
     console.log('User logout from homepage');
-    
+
     // Clear ONLY user session data (admin uses localStorage)
     sessionStorage.removeItem('isLoggedIn');
     sessionStorage.removeItem('username');
     sessionStorage.removeItem('email');
     sessionStorage.removeItem('userRole');
     sessionStorage.removeItem('redirectAfterLogin');
-    
+
     // Update local state
     setIsLoggedIn(false);
     setUsername('Guest');
-    
+
     // Try API call but don't wait for it
     apiClient.post('/auth/logout').catch(error => {
       console.log('Logout API call failed, but continuing:', error);
     });
-    
+
     // Force page reload to ensure clean state
     window.location.replace('/');
   };
@@ -750,30 +750,51 @@ const HomePage = () => {
           display: flex;
           align-items: center;
           gap: 1rem;
+          position: absolute;
+          background: linear-gradient(135deg, rgba(255, 254, 247, 0.95) 0%, rgba(250, 248, 240, 0.95) 100%);
+          backdrop-filter: blur(10px);
+          border-radius: 12px;
+          padding: 1rem;
+          box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+          animation: floatCard 3s ease-in-out infinite;
+          border: none;
+          bottom: -5%;
+          right: -25%;
+          animation-delay: 1s;
+          width: 180px;
+          height: auto;
+        }
+
+        body.dark-theme .stat-card {
+          background: linear-gradient(135deg, rgba(42, 56, 68, 0.95) 0%, rgba(31, 41, 55, 0.95) 100%);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .stat-icon {
-          width: 50px;
-          height: 50px;
-          border-radius: 10px;
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
           background: #5B8DB8;
           display: flex;
           align-items: center;
           justify-content: center;
           color: #FBF8F0;
-          font-size: 1.5rem;
+          font-size: 1.2rem;
+          flex-shrink: 0;
         }
 
         .stat-info h3 {
-          font-size: 0.875rem;
+          font-size: 0.75rem;
           color: var(--text-secondary);
-          margin-bottom: 0.25rem;
+          margin-bottom: 0.125rem;
+          margin: 0;
         }
 
         .stat-info p {
-          font-size: 1.25rem;
+          font-size: 1rem;
           font-weight: 700;
           color: var(--text-primary);
+          margin: 0;
         }
 
         .profile-card {
@@ -904,7 +925,7 @@ const HomePage = () => {
           <li><a href="/profile"><User size={20} /> Profile</a></li>
           {isLoggedIn && (
             <li>
-              <a href="/notifications" style={{position: 'relative'}}>
+              <a href="/notifications" style={{ position: 'relative' }}>
                 <Bell size={20} /> Notifications
                 {unreadReplies > 0 && (
                   <span className="notification-badge">{unreadReplies}</span>
@@ -980,13 +1001,11 @@ const HomePage = () => {
                   <div className="chart-center"></div>
                 </div>
               </div>
-              <div className="floating-card card-2">
-                <div className="stat-card">
-                  <div className="stat-icon">📊</div>
-                  <div className="stat-info">
-                    <h3>Properties Listed</h3>
-                    <p>2.5k+</p>
-                  </div>
+              <div className="stat-card">
+                <div className="stat-icon">📊</div>
+                <div className="stat-info">
+                  <h3>Properties Listed</h3>
+                  <p>2.5k+</p>
                 </div>
               </div>
               <div className="floating-card card-3">
@@ -1002,6 +1021,29 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+      {/* Admin Access Link - Hidden */}
+      <div style={{
+        position: 'fixed',
+        bottom: '10px',
+        right: '10px',
+        opacity: '0.3',
+        fontSize: '10px',
+        zIndex: 9999
+      }}>
+        <button
+          onClick={() => navigate('/admin/login')}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--text-secondary)',
+            cursor: 'pointer',
+            fontSize: '10px'
+          }}
+          title="Admin Access"
+        >
+          •
+        </button>
+      </div>
     </div>
   );
 };

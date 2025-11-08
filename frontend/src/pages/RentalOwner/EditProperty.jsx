@@ -193,7 +193,7 @@ const EditProperty = () => {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '2rem' }}>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #668cb4 0%, #fffef7 100%)', padding: '2rem' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <button
           onClick={() => navigate('/owner/dashboard')}
