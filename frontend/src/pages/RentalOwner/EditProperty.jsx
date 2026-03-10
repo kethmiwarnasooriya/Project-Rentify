@@ -436,7 +436,7 @@ const EditProperty = () => {
                     {existingImages.map((filename, index) => (
                       <div key={index} style={{ position: 'relative' }}>
                         <img
-                          src={`http://localhost:8080/api/files/${filename}`}
+                          src={`https://project-rentify-production.up.reailway.app/api/files/${filename}`}
                           alt={`Property ${index + 1}`}
                           style={{
                             width: '100%',

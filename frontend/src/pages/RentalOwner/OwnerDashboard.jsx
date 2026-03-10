@@ -166,7 +166,7 @@ const OwnerDashboard = () => {
                     <div key={prop.id} className="property-item">
                         <div className="property-thumbnail">
                             {prop.imageFilenames && prop.imageFilenames.length > 0 ? (
-                                <img src={`http://localhost:8080/api/files/${prop.imageFilenames[0]}`} alt={prop.title} loading="lazy"/>
+                                <img src={`https://project-rentify-production.up.reailway.app/api/files/${prop.imageFilenames[0]}`} alt={prop.title} loading="lazy"/>
                             ) : (
                                 <div className="placeholder-thumb"><Building2 size={24} /></div>
                             )}

@@ -453,7 +453,7 @@ const TenantDashboard = () => {
                             <div className="property-image">
                                 {prop.imageFilenames && prop.imageFilenames.length > 0 ? (
                                     <img
-                                        src={`http://localhost:8080/api/files/${prop.imageFilenames[0]}`}
+                                        src={`https://project-rentify-production.up.reailway.app/api/files/${prop.imageFilenames[0]}`}
                                         alt={prop.title}
                                         loading="lazy"
                                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -2262,7 +2262,7 @@ const TenantDashboard = () => {
                                 <div className="modal-image-gallery">
                                     <div className="image-viewer">
                                         <img
-                                            src={`http://localhost:8080/api/files/${selectedProperty.imageFilenames[currentImageIndex]}`}
+                                            src={`https://project-rentify-production.up.reailway.app/api/files/${selectedProperty.imageFilenames[currentImageIndex]}`}
                                             alt={`${selectedProperty.title} ${currentImageIndex + 1}`}
                                             className="modal-main-image"
                                             onTouchStart={onTouchStart}
@@ -2304,7 +2304,7 @@ const TenantDashboard = () => {
                                             {selectedProperty.imageFilenames.map((filename, index) => (
                                                 <img
                                                     key={index}
-                                                    src={`http://localhost:8080/api/files/${filename}`}
+                                                    src={`https://project-rentify-production.up.reailway.app/api/files/${filename}`}
                                                     alt={`${selectedProperty.title} ${index + 1}`}
                                                     className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
                                                     onClick={() => goToImage(index)}

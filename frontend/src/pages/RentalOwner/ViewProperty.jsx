@@ -190,7 +190,7 @@ const ViewProperty = () => {
           {property.imageFilenames && property.imageFilenames.length > 0 && (
             <div style={{ position: 'relative', height: '400px' }}>
               <img
-                src={`http://localhost:8080/api/files/${property.imageFilenames[currentImageIndex]}`}
+                src={`https://project-rentify-production.up.reailway.app/api/files/${property.imageFilenames[currentImageIndex]}`}
                 alt={property.title}
                 style={{
                   width: '100%',
