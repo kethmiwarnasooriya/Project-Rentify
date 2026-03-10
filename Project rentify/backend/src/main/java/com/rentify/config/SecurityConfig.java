@@ -103,7 +103,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // **IMPORTANT**: List your EXACT frontend origin(s)
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:3001")); // Allow both 3000 and 3001 if you switch
+        configuration.setAllowedOrigins(List.of("https://rentify-application-production.up.railway.app", "http://localhost:3001")); // Allow both 3000 and 3001 if you switch
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList(
                 "Authorization", "Cache-Control", "Content-Type", "X-XSRF-TOKEN", // Crucial for CSRF
