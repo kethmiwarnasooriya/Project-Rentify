@@ -8,7 +8,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "https://project-rentify-production.up.reailway.app",
+            "url": "https://project-rentify.up.railway.app",
             "webRoot": "${workspaceFolder}"
         }
     ]

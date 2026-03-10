@@ -172,7 +172,7 @@ npm install
 cd backend
 mvn spring-boot:run
 ```
-Backend runs on `https://project-rentify-production.up.reailway.app`
+Backend runs on `https://project-rentify.up.railway.app`
 
 2. **Start the frontend development server**
 ```bash
@@ -540,7 +540,7 @@ BCryptPasswordEncoder - 10 rounds (default strength)
 
 Access the complete API documentation with interactive testing at:
 ```
-https://project-rentify-production.up.reailway.app/swagger-ui.html
+https://project-rentify.up.railway.app/swagger-ui.html
 ```
 
 **API Endpoints Overview:**
